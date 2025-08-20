@@ -1,0 +1,149 @@
+I mostly followed the tutorial to create the tic-tac-toe game. Opened the link in the browser to see the changes.
+Initial code given:
+
+export default function Square() {
+  return <button className="square">X</button>;
+}
+
+This only outputs a single square, which is not a board that can be played with. At this point the app only verifies that React, JSX, and the CSS pipeline are wired up correctly.
+
+Created a function called board that can have 8 more squares, making it a 3 × 3 board. Here the program upgrades from a lone square to a visual tic-tac-toe grid. Square is rewritten as a pure component that displays whatever value it receives through the value prop. The new parent component Board groups nine of those squares into three rows, each row styled with "board-row" so CSS can lay the children out in a 3 × 3 matrix. Numbering the squares makes their positions obvious when you refresh the browser.:
+
+function Square({ value }) {
+  return <button className="square">{value}</button>;
+}
+
+export default function Board() {
+  return (
+    <>
+      <div className="board-row">
+        <Square value="1" />
+        <Square value="2" />
+        <Square value="3" />
+      </div>
+      <div className="board-row">
+        <Square value="4" />
+        <Square value="5" />
+        <Square value="6" />
+      </div>
+      <div className="board-row">
+        <Square value="7" />
+        <Square value="8" />
+        <Square value="9" />
+      </div>
+    </>
+  );
+}
+
+Now to make it interactive, added another function inside the Square function to handle clicks. By importing useState the Square component can remember its own data between renders. The state variable value starts at null. When the user clicks, handleClick writes "X" into that state, which causes React to re-render the button so the new letter appears. Because each square instance owns its own state, nine independent copies of this component can respond to clicks in isolation:
+
+import { useState } from 'react';
+
+function Square() {
+  const [value, setValue] = useState(null);
+
+  function handleClick() {
+    setValue('X');
+  }
+
+  return (
+    <button className="square" onClick={handleClick}>
+      {value}
+    </button>
+  );
+}
+
+Each square now stores its own state and shows an X when clicked.
+Lifted the state up into the Board so all squares share one source of truth. Square is pure again; the entire board’s data lives in the squares array held by Board. handleClick is the single function that mutates that array: it clones the array for immutability, writes an "X" into the requested index, then commits the update with setSquares. Every Square receives its current letter plus a tiny arrow-function wrapper that supplies the correct index to handleClick. Because the data now resides centrally, every square stays in sync and the board can soon enforce game-wide rules: 
+
+function Square({ value, onSquareClick }) {
+  return (
+    <button className="square" onClick={onSquareClick}>
+      {value}
+    </button>
+  );
+}
+
+export default function Board() {
+  const [squares, setSquares] = useState(Array(9).fill(null));
+
+  function handleClick(i) {
+    const nextSquares = squares.slice();
+    nextSquares[i] = 'X';
+    setSquares(nextSquares);
+  }
+
+  return (
+    <>
+      <div className="board-row">
+        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
+        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
+        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
+      </div>
+      <div className="board-row">
+        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
+        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
+        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
+      </div>
+      <div className="board-row">
+        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
+        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
+        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+      </div>
+    </>
+  );
+}
+
+Now every click updates the central squares array, and the board re-renders accordingly.
+Added turn logic so players alternate X and O, and prevented overwriting a filled square. xIsNext stores whose move is pending. handleClick first refuses a click on an occupied square, then writes either "X" or "O" depending on the flag, and finally flips the flag so the other player moves next. Because the render loop still depends only on squares and xIsNext, a single source of truth dictates both the marks on the board and the banner that will be added in the next step: 
+
+export default function Board() {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [squares, setSquares] = useState(Array(9).fill(null));
+
+  function handleClick(i) {
+    if (squares[i]) return;             // ignore if already filled
+
+    const nextSquares = squares.slice();
+    nextSquares[i] = xIsNext ? 'X' : 'O';
+    setSquares(nextSquares);
+    setXIsNext(!xIsNext);               // flip turn
+  }
+
+  /* …render exactly as before… */
+}
+
+Clicks now place X, then O, then X, and so on.
+Implemented winner detection and status banner. calculateWinner enumerates every three-in-a-row pattern, returning "X", "O", or null. handleClick now aborts instantly if a winner already exists, which freezes the board once the game ends. After each render the component recomputes the winner; if someone has won it shows “Winner: X/O”, otherwise it shows which player must move next. The status banner is placed in a dedicated <div> above the grid so players receive immediate feedback as the match progresses.: 
+
+function calculateWinner(sq) {
+  const lines = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6],
+  ];
+  for (const [a,b,c] of lines) {
+    if (sq[a] && sq[a] === sq[b] && sq[a] === sq[c]) return sq[a];
+  }
+  return null;
+}
+
+export default function Board() {
+  /* same state and handleClick, but add: */
+  if (calculateWinner(squares) || squares[i]) return; // in handleClick
+
+  const winner = calculateWinner(squares);
+  const status = winner
+    ? 'Winner: ' + winner
+    : 'Next player: ' + (xIsNext ? 'X' : 'O');
+
+  return (
+    <>
+      <div className="status">{status}</div>
+      {/* three board rows exactly as before */}
+    </>
+  );
+}
+
+The banner shows “Next player: X/O” until a winning line is found, then switches to “Winner: X” or “Winner: O” and freezes further moves.
+

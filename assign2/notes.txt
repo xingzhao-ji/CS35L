@@ -1,0 +1,143 @@
+;; This buffer is for text that is not saved, and for Lisp evaluation.
+;; To create a file, visit it with ‘C-x C-f’ and enter text in its buffer.
+
+Exercise 2.1
+
+(* (expt 2 (- 607 1)) (- (expt 2 607) 1))
+141053783706712069063207958086063189881486743514715667838838675999954867742652380114104193329037690251561950568709829327164087724366370087116731268159313652487450652439805877296207297446723295166658228846926807786652870188920867879451478364569313922060370695064736073572378695176473055266826253284886383715072974324463835300053138429460296575143368065570759537328128
+
+
+(+ 607 (floor (log (- (expt 2 607) 1) 2)))
+1214
+
+C-h k C-h k runs the command describe key on the key C-h k itself. C-h b lists all keybindings, while C-h k gives targeted information on a specific key sequence. So C-h b is for global reference, whereas C-h k is for individual look up. In this case, we're using C-h k to inspect what the C-h k command does.
+
+C-h k M-SPC runs describe-key on M-SPC. M-SPC is bound to the command cycle-spacing, which cycles through different whitespace configurations: one space, no space, and original spacing.
+
+Homework:
+When invoked with python randline.py (ie. python 3), the interpreter immediately raises "SyntaxError: invalid syntax" pointing at the line "except IOError as (errno, strerror):" This is because python 3 does not support unpacking an exception iinto a tuple directly in the except caluse; it only allows "execept ExceptionType as name:"
+
+When invoked with python2 shuf.py, the interpreter immediately outputs the following:
+  File "shuf.py", line 71
+    print('shuf: error: invalid input range', file=sys.stderr)
+                                                  ^
+SyntaxError: invalid syntax
+
+This happens because print is a statement in python 2, not a function, so the parser chokes on the "file=" keyword
+
+[xj120804@lnxsrv15 assign2]$ time /usr/bin/python shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.776s
+user	0m0.703s
+sys	0m0.054s
+[xj120804@lnxsrv15 assign2]$ time /usr/bin/python shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.755s
+user	0m0.683s
+sys	0m0.052s
+[xj120804@lnxsrv15 assign2]$ time /usr/bin/python shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.771s
+user	0m0.700s
+sys	0m0.053s
+
+median of sum of user and system = 0m0.753s
+
+
+[xj120804@lnxsrv15 assign2]$ nano notes.txt
+[xj120804@lnxsrv15 assign2]$ time /usr/local/cs/bin/python shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.825s
+user	0m0.732s
+sys	0m0.045s
+[xj120804@lnxsrv15 assign2]$ time /usr/local/cs/bin/python shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.838s
+user	0m0.749s
+sys	0m0.049s
+[xj120804@lnxsrv15 assign2]$ time /usr/local/cs/bin/python shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.809s
+user	0m0.728s
+sys	0m0.043s
+
+median of sum of user and system = 0m0.777s
+
+
+[xj120804@lnxsrv15 assign2]$ time shuf < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.099s
+user	0m0.084s
+sys	0m0.011s
+[xj120804@lnxsrv15 assign2]$ time shuf < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.070s
+user	0m0.059s
+sys	0m0.008s
+[xj120804@lnxsrv15 assign2]$ time shuf < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+
+real	0m0.074s
+user	0m0.066s
+sys	0m0.007s
+
+median of sum of user and system = 0m0.073
+
+GPU
+Architecture:                         x86_64
+CPU op-mode(s):                       32-bit, 64-bit
+Address sizes:                        44 bits physical, 48 bits virtual
+Byte Order:                           Little Endian
+CPU(s):                               4
+On-line CPU(s) list:                  0-3
+Vendor ID:                            GenuineIntel
+Model name:                           Intel(R) Xeon(R) Silver 4116 CPU @ 2.10GHz
+CPU family:                           6
+Model:                                85
+Thread(s) per core:                   1
+Core(s) per socket:                   4
+Socket(s):                            1
+Stepping:                             4
+BogoMIPS:                             4190.15
+Flags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch pti ssbd ibrs ibpb stibp fsgsbase bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rdseed adx smap clflushopt avx512cd avx512bw avx512vl xsaveopt xsavec xsaves flush_l1d
+Hypervisor vendor:                    Microsoft
+Virtualization type:                  full
+L1d cache:                            128 KiB (4 instances)
+L1i cache:                            128 KiB (4 instances)
+L2 cache:                             4 MiB (4 instances)
+L3 cache:                             66 MiB (4 instances)
+NUMA node(s):                         1
+NUMA node0 CPU(s):                    0-3
+Vulnerability Gather data sampling:   Unknown: Dependent on hypervisor status
+Vulnerability Itlb multihit:          KVM: Mitigation: VMX unsupported
+Vulnerability L1tf:                   Mitigation; PTE Inversion
+Vulnerability Mds:                    Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Meltdown:               Mitigation; PTI
+Vulnerability Mmio stale data:        Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Mitigation; IBRS
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; IBRS; IBPB conditional; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI SW loop, KVM SW loop
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+
+OS
+NAME="Red Hat Enterprise Linux"
+VERSION="9.5 (Plow)"
+ID="rhel"
+ID_LIKE="fedora"
+VERSION_ID="9.5"
+PLATFORM_ID="platform:el9"
+PRETTY_NAME="Red Hat Enterprise Linux 9.5 (Plow)"
+ANSI_COLOR="0;31"
+LOGO="fedora-logo-icon"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:9::baseos"
+HOME_URL="https://www.redhat.com/"
+DOCUMENTATION_URL="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9"
+BUG_REPORT_URL="https://issues.redhat.com/"
+
+REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 9"
+REDHAT_BUGZILLA_PRODUCT_VERSION=9.5
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="9.5"

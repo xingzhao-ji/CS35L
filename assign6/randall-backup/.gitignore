@@ -1,0 +1,5 @@
+randall
+*.o
+*.tgz
+tmp.*
+err

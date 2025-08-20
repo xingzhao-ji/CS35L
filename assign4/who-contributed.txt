@@ -1,0 +1,46 @@
+Command:
+git log --reverse -S'Even newspaper reports present contradictory information.' \
+        --date=short --pretty='%h %ad %an %s' --all
+Result:
+    c12b4327  1995-12-21  Arthur David Olson  Eggert changes
+
+Command:
+git show c12b4327
+
+Result:
+`git show` reveals the sentence was added to **northamerica** while
+quoting Thomas G. Shanks’s *The American Atlas* as a data source:
+
+commit c12b432741eed9a422fbf99fa27af6e7a941d88b
+Author: Arthur David Olson <ado@elsie>
+Date:   Thu Dec 21 11:43:42 1995 -0500
+
+    Eggert changes
+    
+    SCCS-file: northamerica
+    SCCS-SID: 7.20
+
+diff --git a/northamerica b/northamerica
+index 92b55af3..9b8a5ec8 100644
+--- a/northamerica
++++ b/northamerica
+@@ -14,25 +14,24 @@
+ 
+ # United States
+ 
++# From Paul Eggert <eggert@twinsun.com> (1995-12-19):
++# A good source for time zone historical data in the US is
++# Thomas G. Shanks, The American Atlas (5th edition),
++# San Diego: ACS Publications, Inc. (1991).
++# Make sure you have the errata sheet; the book is somewhat useless without it.
++# It is the source for the US and Puerto Rico entries below.
+The patch adds the sentence to file ‘northamerica’ as part of a block
+quoting Thomas G. Shanks’s *The American Atlas*.
+
+No earlier commit contains the line, and subsequent commits leave it
+intact.
+
+Conclusion:
+The sentence entered tzdb on **21 Dec 1995** in commit
+**c12b4327**, authored and committed by **Arthur David Olson**, quoting
+Shanks’s reference work. It was not copied from the plaintiff’s book.

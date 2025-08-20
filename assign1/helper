@@ -1,0 +1,130 @@
+#!/bin/bash
+
+# Define required files in an array
+required_files=(
+    "lab1.1.drib" "lab1.2.drib" "lab1.3.drib" "lab1.4.drib"
+    "exer2.html" "exer3.html" "exer4.html"
+    "hello-a1" "hello-a2" "hello-b1" "hello-b2"
+    "hello-c1" "hello-c2" "hello-d2" "myspell"
+    "notes.txt"
+)
+
+
+# Function to print usage
+usage() {
+    echo "Usage: $0 [command]"
+    echo "Commands:"
+    echo "  init         Initialize your system to work with Assignment 1."
+    echo "  zip          Prepare a ZIP file for submission."
+    exit 1
+}
+
+# Ensure at least one argument is provided
+if [ "$#" -eq 0 ]; then
+    echo "Error: No command provided."
+    usage
+fi
+
+init_command() {
+    if [ "$#" -ne 0 ]; then
+        echo "Error: Incorrect usage of 'init' command."
+        usage
+    fi
+    
+    if ! grep 'export PATH=/usr/local/cs/bin:$PATH' ~/.profile >/dev/null 2>&1; then
+	echo 'export PATH=/usr/local/cs/bin:$PATH' >> ~/.profile
+	export PATH=/usr/local/cs/bin:$PATH
+	echo "export LC_ALL='C'" >> ~/.profile
+	export LC_ALL='C'
+    fi
+    
+    if ! grep 'persist-drib' ~/.emacs >/dev/null 2>&1; then
+	cat init.el >> ~/.emacs
+    fi
+
+    echo "Success: Initialized your system to work on Assignment 1."
+}
+
+# Function to handle the 'zip' command
+zip_command() {
+    if [ "$#" -ne 0 ]; then
+        echo "Error: Incorrect usage of 'zip' command."
+        usage
+    fi
+    
+    missing_files=()
+    existing_files=()
+    for file in "${required_files[@]}"; do
+        if [ ! -e "$file" ]; then
+            missing_files+=("$file")
+        else
+            existing_files+=("$file")
+        fi
+    done
+
+    empty_files=()
+    for file in "${required_files[@]}"; do
+        if [ -e "$file" ] && [ ! -s "$file" ] && [[ "${file:0:5}" != "hello" ]]; then
+            empty_files+=("$file")
+        fi
+    done
+
+    # Check if myspell exists and test output
+    if [ -x "./myspell" ]; then
+        if [ ! -e "sorted.words" ]; then
+            echo "Error: myspell requires sorted.words. Please create this file first."
+        else
+            myspell_output=$(echo "definitelynotaword" | ./myspell 2>/dev/null)
+            if [ $? -ne 0 ]; then
+                echo "Error: myspell encountered an error."
+            elif [ "$myspell_output" != "definitelynotaword" ]; then
+                echo "Error: myspell does not produce the expected output."
+            else
+                echo "Success: myspell passed the sanity test."
+            fi
+        fi
+    else
+        echo "Warning: myspell is not available or not executable. Skipping myspell test."
+    fi
+    
+    # Check for missing files
+    if [ ${#missing_files[@]} -ne 0 ]; then
+        echo "Warning: The following required files are missing and will not be included in the ZIP:"
+        printf ' - %s\n' "${missing_files[@]}"
+    fi
+    
+    # Check for empty files
+    if [ ${#empty_files[@]} -ne 0 ]; then
+        echo "Warning: The following files are empty:"
+        printf ' - %s\n' "${empty_files[@]}"
+    fi
+
+    # Zip all existing files
+    if [ ${#existing_files[@]} -gt 0 ]; then
+        zip assign.zip "${existing_files[@]}" >/dev/null
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to create assign.zip."
+            exit 1
+        fi
+        echo "Success: assign.zip created successfully with the available files."
+    else
+        echo "Error: No files available to zip."
+        exit 1
+    fi
+}
+
+# Handle commands using case statement
+case "$1" in
+    zip)
+        shift
+        zip_command "$@"
+        ;;
+    init)
+	shift
+	init_command "$@"
+	;;
+    *)
+        echo "Error: Unknown command '$1'"
+        usage
+        ;;
+esac

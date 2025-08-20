@@ -1,0 +1,227 @@
+
+Jared Ji 906279015
+
+-----------------------------------------------------------------------------
+
+REPOSITORY SET-UP
+
+    wget https://web.cs.ucla.edu/classes/spring23/cs35L/assign/randall-git.tgz
+    tar -xvzf randall-git.tgz
+    git clone $(realpath randall/.git) randall-work
+    cd randall-work
+
+Initial analysis: 350-line monolithic randall.c with hardcoded behavior.
+No modularity, no configurability, difficult to test individual components.
+
+Wrote basic sanity check first (TDD approach):
+    check: ./randall 10 | wc -c | grep -qx 10 && echo PASS || echo FAIL
+
+-----------------------------------------------------------------------------
+
+REFACTORING STRATEGY & MODULE DESIGN
+
+Key insight: identified three orthogonal concerns that should be separated:
+1. CLI argument parsing
+2. Random number generation (3 different sources)  
+3. Output handling (stdio vs syscall buffering)
+
+Design decision: used enums + function pointers rather than inheritance-style
+polymorphism. Simpler in C, easier to debug, no vtable indirection.
+
+Header strategy: each module exposes minimal public interface. 
+- No global state leaked between modules
+- Forward declarations used to avoid circular dependencies
+- Each .c file only includes headers it actually needs
+
+Why I put functions where I did:
+• options.c: All getopt logic, input validation, struct population
+• output.c: Buffer management, write strategy selection  
+• rand64-*.c: Each RNG backend isolated, same interface signature
+• randall.c: Just coordination logic, no business logic
+
+-----------------------------------------------------------------------------
+
+MODULE SPLIT IMPLEMENTATION (commit b43f525)
+
+Started with options.c since CLI parsing was most self-contained.
+Challenge: getopt global state made unit testing tricky, but kept it simple
+with parse_opts() returning bool for easy error propagation.
+
+Header file design choices:
+- Used forward declarations where possible
+- Avoided #include in headers unless absolutely necessary  
+- Made structs opaque when feasible (kept output buffer private)
+
+Compilation issue: initially had circular dependency between output.h and 
+options.h. Fixed by moving shared types to options.h and having output.h
+include it unidirectionally.
+
+The Makefile changes were straightforward - just added each .c to SRCS
+and let the implicit rules handle .o generation. This caught missing 
+#includes immediately which was helpful.
+
+-----------------------------------------------------------------------------
+
+OPTION PARSING DESIGN DECISIONS
+
+Chose to validate inputs in specific order to fail fast:
+1. getopt unknown flags (catches typos early)
+2. argc validation (missing/extra args)  
+3. BYTES parsing (strtoll with error checking)
+4. -i/-o argument validation
+5. block size validation
+
+This ordering meant users get quick feedback on obvious mistakes.
+
+Edge case handling:
+- BYTES=0 should fail (spec says "positive")
+- Negative block sizes should fail  
+- File paths: decided to accept any path, not just absolute ones
+- -o with non-numeric arg: treat as filename (not implemented yet but ready)
+
+Bug: initially forgot to check argc properly. Fixed in parse_opts().
+
+-----------------------------------------------------------------------------
+
+RANDOM NUMBER GENERATION BACKENDS
+
+Design: each backend has same signature (init/next/fini pattern)
+This made the main() dispatch logic clean.
+
+rand64-hw.c challenges:
+- CPUID detection tricky, used __builtin_cpu_supports() initially
+- Had to handle case where RDRAND unavailable gracefully
+- Wrapper function needed since hw_next() returns status, not value
+
+rand64-sw.c evolution:
+- Started with mrand48_r as spec suggested
+- Realized this might not be random enough for some use cases
+- Switched to reading /dev/urandom for better entropy
+- Used buffering to avoid syscall overhead
+
+rand64-file.c design:
+- Added for deterministic testing (can feed known patterns)
+- File cycling: when EOF reached, seek back to start
+- Buffer management: 4KB chunks to balance memory vs syscalls
+
+-----------------------------------------------------------------------------
+
+OUTPUT HANDLING & BLOCK WRITES
+
+Challenge: -o N means write in chunks of exactly N bytes (except final chunk)
+This is different from stdio's internal buffering.
+
+Design choice: output.c owns the buffer, main() just passes function pointer.
+Alternative would have been to expose buffer management to main(), but that
+would couple the modules more tightly.
+
+Tricky edge cases:
+- What if N > total bytes requested? (chunk should be smaller)
+- Partial writes from write() syscall (should continue, not fail)
+- Buffer allocation failure (return error code)
+
+Implementation: used single loop with min(remaining, blocksize) logic.
+Considered separate code paths for stdio vs write() but kept unified for
+simplicity.
+
+-----------------------------------------------------------------------------
+
+LLM TEST GENERATION EXPERIMENT
+
+Decided to try Claude 3 Sonnet since it had good reputation for code understanding.
+
+Prompt engineering approach:
+- Gave it interface spec, not source code (black box testing)
+- Asked for specific table format to make parsing easier
+- Requested comprehensive coverage including error cases
+- Used deterministic naming scheme for easy automation
+
+What worked well:
+- Generated syntactically correct commands
+- Good coverage of edge cases I hadn't thought of
+- Error cases were realistic
+
+What needed refinement:
+- Some test cases assumed specific error messages  
+- Hardware-dependent test (RDRAND) needed conditional logic
+- File size assumptions didn't match test setup
+
+Integration was surprisingly smooth - just needed sed to convert markdown 
+table to TSV format for shell processing.
+
+-----------------------------------------------------------------------------
+
+DEBUGGING & BUG FIXES
+
+Major bugs caught by LLM test suite:
+
+1. E001: Missing BYTES argument wasn't caught
+   - Problem: getopt parsing succeeded, but didn't check argc
+   - Fix: Added explicit argc validation in parse_opts()
+
+2. E002: BYTES=0 was accepted (should fail)  
+   - Problem: strtoll(0) is valid, but spec says "positive"
+   - Fix: Added explicit check for o->total == 0
+
+3. E012: Negative block size accepted
+   - Problem: was using strtol, negative values wrapped around
+   - Fix: Switched to strtoul, added bounds checking
+
+Debugging approach: added printf debugging first, then used gdb for
+more complex issues. Valgrind caught a buffer overrun in early version
+of output.c (was reading past malloc'd buffer).
+
+Memory management: decided to use malloc/free rather than stack buffers
+for large block sizes. Considered using mmap for very large blocks but
+kept it simple.
+
+-----------------------------------------------------------------------------
+
+PERFORMANCE CONSIDERATIONS & TIMING RESULTS
+
+Tested different configurations:
+- Default (mrand48_r): ~500 MB/s
+- /dev/urandom: ~200 MB/s (syscall overhead)  
+- RDRAND: ~300 MB/s (hardware limitation)
+- Block size effects: larger blocks helped with write() throughput
+
+Interesting finding: stdio buffering was competitive with manual buffering
+for most use cases. The -o N option mainly useful for controlling I/O
+patterns, not raw performance.
+
+Memory allocation: considered using static buffers but malloc() overhead
+was negligible compared to I/O costs.
+
+-----------------------------------------------------------------------------
+
+FINAL ARCHITECTURE
+
+Ended up with clean separation:
+- options.c: 100 lines, just parsing
+- output.c: 80 lines, just I/O strategy  
+- rand64-*.c: ~50 lines each, focused backends
+- randall.c: 60 lines, just coordination
+
+This made the code much more maintainable. Each module can be tested
+independently, and adding new RNG backends or output methods is
+straightforward.
+
+Header discipline paid off - minimal dependencies, fast compilation,
+easy to understand module boundaries.
+
+The enum-based dispatch was simpler than function pointer tables and
+easier to debug than macro-based solutions.
+
+-----------------------------------------------------------------------------
+
+LESSONS LEARNED
+
+1. TDD approach really helped - having tests first caught integration bugs early
+2. LLM test generation was surprisingly effective for black-box testing
+3. Module boundaries are crucial - spent time getting them right up front
+4. Error handling consistency matters - single exit path made code cleaner
+5. Performance often comes from reducing syscalls, not optimizing algorithms
+
+The refactoring took longer than expected but resulted in much cleaner,
+more testable code. The original 350-line file is now 5 focused modules
+totaling ~400 lines but much more maintainable.

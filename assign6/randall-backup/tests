@@ -1,0 +1,36 @@
+	run T001 0 1              ./randall 1; \
+	run T002 0 1024           ./randall 1024; \
+	run T003 0 134217728      ./randall 134217728; \
+	run T004 0 512            ./randall -i rdrand 512; \
+	run T005 0 256            ./randall -i mrand48_r 256; \
+	run T006 0 100            ./randall -o stdio 100; \
+	run T007 0 1024           ./randall -o 64 1024; \
+	run T008 0 500            ./randall -o 1 500; \
+	run T009 0 1000           ./randall -o 2048 1000; \
+	run T010 0 2048           ./randall -i /dev/urandom 2048; \
+	run T011 0 128            ./randall -o 32 -i mrand48_r 128; \
+	run T012 0 64             ./randall -i mrand48_r -o stdio 64; \
+	run T013 0 63             ./randall 63 -o 64; \
+	dd if=/dev/urandom bs=1 count=1000 of=/tmp/testdata      2>/dev/null; \
+	run T014 0 1000           ./randall -i /tmp/testdata 1000; \
+	run T015 0 4096           ./randall 4096 -i rdrand -o 1024; \
+	# ---------- error-path tests ------------------------------------------ \
+	run E001 1 0              ./randall; \
+	run E002 1 0              ./randall 0; \
+	run E003 1 0              ./randall -5; \
+	run E004 1 0              ./randall abc; \
+	run E005 1 0              ./randall 0x100; \
+	run E006 1 0              ./randall -x 100; \
+	run E007 1 0              ./randall -i badvalue 100; \
+	run E008 1 0              ./randall -o badvalue 100; \
+	# -- E009 depends on hardware: skip if RDRAND actually works ---------- \
+	if ./randall -i rdrand 1 >/dev/null 2>&1; then \
+	  echo "== E009 (skipped – RDRAND present) =="; \
+	else \
+	  run E009 1 0           ./randall -i rdrand 100; \
+	fi; \
+	run E010 1 0              ./randall -i /nonexistent 100; \
+	dd if=/dev/urandom bs=1 count=32 of=/tmp/shortfile       2>/dev/null; \
+	run E011 1 0              ./randall -i /tmp/shortfile 1000; \
+	run E012 1 0              ./randall -o -1 100; \
+	run E013 1 0              ./randall 100 200

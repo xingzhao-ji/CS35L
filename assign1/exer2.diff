@@ -1,0 +1,63 @@
+--- exer1.html	2025-04-10 17:30:42.040735000 -0700
++++ exer2.html	2025-04-10 17:38:36.555425000 -0700
+@@ -88,7 +88,7 @@
+ </section>
+ 
+ <section>
+-  <h2>Laboratory: GNU/Linux and Emacs scavenger hunt</h2>
++<h2>Laboratory: GNU/Linux and Emacs scavenger hunt</h2>
+ 
+ <ul>
+   <li>Emacs comes with a builtin tutorial.
+@@ -104,7 +104,7 @@
+      and you are not expected to read it all.</li>
+ </ul>
+ 
+-<!-- diff，在UNIX系統上的一個工具程式，它可以比較兩個檔案之間的不同。通常它被用來比較同一個檔案，在不同版本間的差異。它可以產生一個擴展名為.diff或.patch的檔案，這個檔案可以被另一個工具程式patch來使用。-->
++
+ 
+ </section>
+ <section>
+@@ -125,7 +125,7 @@
+   <li>Take the tutorial.</li>
+ </ol>
+ 
+-<!-- DELETE-ME DELETE-ME DELETE-ME -->
++
+ <p>
+ For the following lab exercises,
+ use intelligent ways of answering the questions. For example, if
+@@ -484,9 +484,9 @@
+ <section>
+ <h2>Autograder Test Cases</h2>
+ 
+-<!-- You can learn more about HTML comments at
+-	<https://en.wikipedia.org/wiki/HTML_comment#Comments>.
+-	-->
++
++
++
+ <ul>
+     <li>(2 points) Lab 1.1.6: First occurrence of "UTF-8"<br>Make sure to use the Emacs search function.</li>
+     <li>(2 points) Lab 1.1.7: First occurrence of "scavenger"<br>Make sure to use the Emacs search function and to go back a word.</li>
+@@ -601,10 +601,10 @@
+ 	submission. As per the syllabus, remember that all code is
+     subject to manual inspection.
+ </p>
+-<!--
+-<p>Or maybe more lines, if something has gone wrong.</p>
+--<->-
+--->
++
++
++
++
+ </section>
+ 
+ <footer>
+@@ -622,4 +622,4 @@
+ 
+ </body>
+ </html>
+-<!-- end of HTML resource -->
++

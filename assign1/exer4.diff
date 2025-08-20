@@ -1,0 +1,125 @@
+--- exer1.html	2025-04-14 20:17:22.379092000 -0700
++++ exer4.html	2025-04-14 21:52:17.583615000 -0700
+@@ -112,7 +112,7 @@
+ <p>No submission is required for this lab section, but please do it to
+     make sure your system is set up correctly and to familiarize yourself
+     with Emacs.</p>
+-<ol>
++<oL>
+   <li>Make sure to have followed the steps in Setup.</li>
+   <li>Run the shell command <samp>type emacs</samp> which should
+     report that it is <samp>/usr/local/cs/bin/emacs</samp>.</li>
+@@ -138,7 +138,7 @@
+ <section>
+ <h3>Lab 1.1: Moving around in Emacs (10 points)</h3>
+ 
+-<ol>
++<oL>
+ <li>Download a copy of the web page you’re looking at into a
+ file named <samp>assign1.html</samp>. You can do this
+ with the following shell command:
+@@ -190,7 +190,7 @@
+ 
+ <section>
+ <h3>Lab 1.2: Deleting text in Emacs (10 points)</h3>
+-<ol>
++<oL>
+ <li>Use Emacs to edit the file <code>exer2.html</code>.
+   <ul>
+     <li>The idea is to
+@@ -229,7 +229,7 @@
+ 
+ <section>
+ <h3>Lab 1.3: Inserting text in Emacs (15 points)</h3>
+-<ol>
++<oL>
+ <li>Use Emacs to edit the file <samp>exer3.html</samp>.
+ 	<ul>
+ 	    <li>Just like Lab 1.1, use the <code>persist-drib</code> command to
+@@ -279,7 +279,7 @@
+ that you should know, like copy and paste, search and replace, and undo.
+ </p>
+ 
+-<ol>
++<oL>
+ <li>Execute the shell command
+ "<code>cat exer2.html exer2.diff &gt;exer4.html</code>"
+ to create a file <samp>exer4.html</samp> that contains a copy of <code>exer2.html</code> followed by a copy of <code>exer2.diff</code>.</li>
+@@ -343,7 +343,7 @@
+ <p>
+ Do these tasks all within Emacs. Don’t use a shell subcommand
+ if you can avoid it. (No need for a dribble file this section.)</p>
+-<ol>
++<oL>
+     <li>In the <samp>assign1</samp> directory, there’s a C source file
+ 	<samp>hello.c</samp> that contains the following text. Open it in
+ 	Emacs.<br>
+@@ -623,3 +623,68 @@
+ </body>
+ </html>
+ <!-- end of HTML resource -->
++<!--
++--- exer1.html	2025-04-10 17:30:42.040735000 -0700
+++++ exer2.html	2025-04-10 17:38:36.555425000 -0700
++@@ -88,7 +88,7 @@
++ </section>
++ 
++ <section>
++-  <h2>Laboratory: GNU/Linux and Emacs scavenger hunt</h2>
+++<h2>Laboratory: GNU/Linux and Emacs scavenger hunt</h2>
++ 
++ <ul>
++   <li>Emacs comes with a builtin tutorial.
++@@ -104,7 +104,7 @@
++      and you are not expected to read it all.</li>
++ </ul>
++ 
++-<!-- diff，在UNIX系統上的一個工具程式，它可以比較兩個檔案之間的不同。通常它被用來比較同一個檔案，在不同版本間的差異。它可以產生一個擴展名為.diff或.patch的檔案，這個檔案可以被另一個工具程式patch來使用。--&gt;
+++
++ 
++ </section>
++ <section>
++@@ -125,7 +125,7 @@
++   <li>Take the tutorial.</li>
++ </ol>
++ 
++-<!-- DELETE-ME DELETE-ME DELETE-ME --&gt;
+++
++ <p>
++ For the following lab exercises,
++ use intelligent ways of answering the questions. For example, if
++@@ -484,9 +484,9 @@
++ <section>
++ <h2>Autograder Test Cases</h2>
++ 
++-<!-- You can learn more about HTML comments at
++-	<https://en.wikipedia.org/wiki/HTML_comment#Comments>.
++-	--&gt;
+++
+++
+++
++ <ul>
++     <li>(2 points) Lab 1.1.6: First occurrence of "UTF-8"<br>Make sure to use the Emacs search function.</li>
++     <li>(2 points) Lab 1.1.7: First occurrence of "scavenger"<br>Make sure to use the Emacs search function and to go back a word.</li>
++@@ -601,10 +601,10 @@
++ 	submission. As per the syllabus, remember that all code is
++     subject to manual inspection.
++ </p>
++-<!--
++-<p>Or maybe more lines, if something has gone wrong.</p>
++--<->-
++---&gt;
+++
+++
+++
+++
++ </section>
++ 
++ <footer>
++@@ -622,4 +622,4 @@
++ 
++ </body>
++ </html>
++-<!-- end of HTML resource --&gt;
+++
++-->

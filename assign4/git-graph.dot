@@ -1,0 +1,60 @@
+digraph G {
+    rankdir = BT;
+    node [shape=box, style=filled, fillcolor="#e8f0fe",
+          fontname="Helvetica", fontsize=10];
+
+    "2a7d63a245" [label="id: 2a7d63a2453e2c30353342a2c9385fa22a846987\nauthor:  Junio C Hamano"];
+    "33ccfd1e5b" [label="id: 33ccfd1e5bed2456599ec81e9e5960a509632210\nauthor:  Peter Krefting"];
+    "bcd6bc478a" [label="id: bcd6bc478ad69514d7e5f704b412ee74cb8ffb7\nauthor:  Junio C Hamano"];
+    "c03bee6e9f" [label="id: c03bee6e9f5c05259f5f501e1f47cd8adb63af38\nauthor:  Junio C Hamano"];
+
+    "bcd6bc478a" -> "2a7d63a245";
+    "33ccfd1e5b" -> "2a7d63a245";
+    "bcd6bc478a" -> "33ccfd1e5b";
+    "c03bee6e9f" -> "bcd6bc478a";
+
+    "4ff58e9690" [label="id: 4ff58e9690df7f06c0ea1a32480effb12ef8139e\nauthor:  Jiang Xin"];
+    "9af6cb88b6" [label="id: 9af6cb88b6b674b140d7f720e6d61811a6c55731\nauthor:  Alex Henrie"];
+    "8d500614f7" [label="id: 8d500614f7a9763c4e4193b8231ab600594aa5ca\nauthor:  Jiang Xin"];
+    "37db9416c4" [label="id: 37db9416c4a097eb347967383b2e5648b7b0753d\nauthor:  Jiang Xin"];
+    "b796ca1cd4" [label="id: b796ca1cd4c996b50bc58a62881da347050a53a3\nauthor:  Fangyi Zhou"];
+    "42fe2b951a" [label="id: 42fe2b951a9ae56bf750a1f0f12a290a3782236f\nauthor:  Jordi Mas"];
+    "48fe8e6a63" [label="id: 48fe8e6a63f8a17f182ec3dc8102af\nauthor:  Jean-Noël Avila"];
+    "08f41b8171" [label="id: 08f41b8171957402e57b9fa4bd72086d3aedcf98\nauthor:  Jiang Xin"];
+    "48bf511320" [label="id: 48bf511320713d6099828a458f748f375d23e\nauthor:  Jiang Xin"];
+    "21cefac967" [label="id: 21cefac967cbe988188acb047d20527cfc15\nauthor:  Jiang Xin"];
+    "d7f69b76ec" [label="id: d7f69b76ec1d3396e63a2a19271af1cd3fa62af\nauthor:  Jiang Xin"];
+    "dedb2883ce" [label="id: dedb2883ce56f07401cc2d2a18e47dd6a2bc798a\nauthor:  Yi-Jyun Pan"];
+
+    "4ff58e9690" -> "33ccfd1e5b";
+    "4ff58e9690" -> "bcd6bc478a";
+
+    "9af6cb88b6" -> "4ff58e9690";
+    "8d500614f7" -> "9af6cb88b6";
+    "8d500614f7" -> "88fda53a16";           
+    "37db9416c4" -> "8d500614f7";
+    "37db9416c4" -> "2c30dfa7d7";
+    "b796ca1cd4" -> "37db9416c4";
+    "42fe2b951a" -> "37db9416c4";
+    "48fe8e6a63" -> "37db9416c4";
+    "08f41b8171" -> "b796ca1cd4";
+    "08f41b8171" -> "42fe2b951a";
+    "48bf511320" -> "08f41b8171";
+    "48bf511320" -> "48fe8e6a63";
+
+    "92e51feec5" [label="id: 92e51feec5bc0edf11ee74f24f3e2e5899eb0660\nauthor:  Ralf Thielow"];
+    "21cefac967" -> "48bf511320";
+    "21cefac967" -> "92e51feec5";
+
+    "55b1c1ab1c" [label="id: 55b1c1ab1c1e4c5707122f5efab21c4601b0\nauthor:  Bagas Sanjaya"];
+    "88fda53a16" [label="id: 88fda53a1637af08681d54e02a87f632ef89657b\nauthor:  Alexander Shopov"];
+    "2c30dfa7d7" [label="id: 2c30dfa7d7c18608d4e19ff229b0c13aebd49a04\nauthor:  Emir SARI"];
+
+    "55b1c1ab1c" -> "4ff58e9690";
+
+    "d7f69b76ec" -> "21cefac967";
+    "d7f69b76ec" -> "55b1c1ab1c";
+
+    "dedb2883ce" -> "d7f69b76ec";
+    "c03bee6e9f"  -> "dedb2883ce";
+}

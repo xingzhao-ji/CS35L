@@ -1,0 +1,115 @@
+I used the tic-tac-toe game I created according to the tutorial. First, I began by asking, “How will the game keep track of which three squares belong to X and which three belong to O?”
+At first I tried counting with two simple numbers, but that told me how many moves each side had, not where they were.
+ I realized I needed containers that could hold actual square indices and never grow past three.
+So I created two queues, one for X, one for O, and a small, optional log for future undo work.
+
+const [xQueue, setXQ] = useState([]);   // squares owned by X
+const [oQueue, setOQ] = useState([]);   // squares owned by O
+
+const [moveQueue, setMoveQueue] = useState([]);      // optional history
+function enqueue(move)  { setMoveQueue(q => [...q, move]); }
+function dequeue()      { setMoveQueue(q => q.slice(1));  }
+
+Next I needed to split the game into two phases. The first phase is when each of the two players places three moves. The second phase is each player now moves a current pre-existing move to a new empty space.
+My first thought was to reuse the queue lengths, but that scattered the phase check everywhere.
+I decided a single switch would be clearer, so I introduced a boolean named phase2 and wrapped the click handler in a two-way branch.
+
+const [phase2, setPhase2] = useState(false);
+
+function handleClick(i) {
+  if (!phase2) {             // Phase 1: placing moves
+    /* placement logic */
+    return;
+  }
+  /* Phase 2: sliding logic */
+}
+
+At first I flipped phase2 with
+if (xQueue.length === 3 && oQueue.length === 3) setPhase2(true);
+but then I noticed Phase 2 started one click late because the current move had not been counted yet.
+I fixed the timing by adding 1 to the queue I was about to extend, which predicts the post-drop length and flips phases on time.
+if ((xQueue.length + 1 === 3 && oQueue.length === 3) ||
+    (oQueue.length + 1 === 3 && xQueue.length === 3)) {
+  setPhase2(true);
+}
+Once Phase 1 felt solid, I updated the placement block so each legal click pushes its square index into the right queue. Now the game knows precisely where every move sits, and it also blocks a fourth move by checking the queue length first.
+
+if (xIsNext) {
+  if (xQueue.length >= 3) return;    // X already has three
+  nextSquares[i] = 'X';
+  setXQ(q => [...q, i]);             // store the square index
+} else {
+  if (oQueue.length >= 3) return;    // O already has three
+  nextSquares[i] = 'O';
+  setOQ(q => [...q, i]);             // store the square index
+}
+
+When I first tried sliding, the program refused to step onto a square that had just been cleared; it still thought that square was busy. I realized I was trying to remove and place in the same click. To separate the actions, I added a new state variable called selectedPiece. The first click on one of your squares stores its index; the next click tries to drop that move elsewhere.
+
+const [selectedPiece, setSelected] = useState(null);
+
+/* start of Phase 2 branch */
+if (selectedPiece === null) {               // no move picked up yet
+  if ((xIsNext && squares[i] === 'X') ||
+      (!xIsNext && squares[i] === 'O')) {
+    setSelected(i);                         // pick up the move
+  }
+  return;
+}
+
+According to the rules, sliding anywhere is wrong, so I listed every legal neighbor for each square in one clear table. Now, before completing a slide, the code checks that the target is both empty and listed in the table; if not, the move is canceled and the player must choose again.
+
+const ADJ = {
+  0:[1,3,4], 1:[0,2,3,4,5], 2:[1,4,5],
+  3:[0,1,4,6,7], 4:[0,1,2,3,5,6,7,8],
+  5:[1,2,4,7,8], 6:[3,4,7], 7:[3,4,5,6,8],
+  8:[4,5,7],
+};
+
+if (!ADJ[selectedPiece].includes(i) || squares[i] !== null) {
+  setSelected(null);                        // illegal target
+  return;
+}
+
+The rules say that whoever occupies the center must move it first, unless a different move would win immediately. I added a quick check: if the center belongs to the current player and they try to slide another move, the code simulates that move; only a winning outcome is allowed.
+
+const CENTER = 4;
+const centerOwner = squares[CENTER];
+const mustMoveCenter =
+  (centerOwner === 'X' && xIsNext) || (centerOwner === 'O' && !xIsNext);
+
+if (mustMoveCenter && selectedPiece !== CENTER) {
+  const probe = squares.slice();
+  probe[selectedPiece] = null;
+  probe[i] = xIsNext ? 'X' : 'O';
+  if (!calculateWinner(probe)) {             // not a winning detour
+    setSelected(null);
+    return;
+  }
+}
+
+After the destination passes the center and adjacency tests, the code clears the origin square, fills the target, and rewrites the owner’s queue so it now lists the new index. Then it clears selectedPiece and hands the turn to the other player.
+
+const next = squares.slice();
+next[selectedPiece] = null;                  // empty old square
+next[i] = xIsNext ? 'X' : 'O';               // fill new square
+setSquares(next);
+
+const moveIndex = p => (p === selectedPiece ? i : p);
+xIsNext ? setXQ(q => q.map(moveIndex)) : setOQ(q => q.map(moveIndex));
+
+setSelected(null);                           // drop complete
+setXIsNext(!xIsNext);
+
+Finally, I rewrote the banner so it can say three things: who won, which move is in hand during Phase 2, or whose turn is next. This way the player always knows what the game expects.
+
+const winner = calculateWinner(squares);
+let status;
+if (winner) {
+  status = 'Winner: ' + winner;
+} else if (phase2 && selectedPiece !== null) {
+  status = `Move ${xIsNext ? 'X' : 'O'} from ${selectedPiece}.`;
+} else {
+  status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+}
+

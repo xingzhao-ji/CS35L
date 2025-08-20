@@ -1,0 +1,24 @@
+Own repo:
+xingzhaoji@Xingzhaos-MacBook-Air git-upstream % git branch -va
+* master                1ee85f0e21 The twelfth batch
+  remotes/origin/HEAD   -> origin/master
+  remotes/origin/jch    515fd3a3b8 Merge branch 'bc/ancient-ci' into jch
+  remotes/origin/maint  d50a5e8939 CI updates
+  remotes/origin/master 1ee85f0e21 The twelfth batch
+  remotes/origin/next   c0e912fd4c Sync with 'master'
+  remotes/origin/seen   9420517941 Merge branch 'rj/build-tweaks-part2' into seen
+  remotes/origin/todo   c7878a9fa5 Meta/CannedResponses: typofix
+
+SEASnet repo:
+[xj120804@lnxsrv15 git]$ git branch -va
+  maint                 f93ff170b9 Git 2.48.1
+* master                388218fac7 The ninth batch
+  remotes/origin/HEAD   -> origin/master
+  remotes/origin/jch    515fd3a3b8 Merge branch 'bc/ancient-ci' into jch
+  remotes/origin/maint  f93ff170b9 Git 2.48.1
+  remotes/origin/master 388218fac7 The ninth batch
+  remotes/origin/next   d13b5baf06 Merge branch 'bc/contrib-thunderbird-patch-inline-fix' into next
+  remotes/origin/seen   5ffff88925 Merge branch 'sj/ref-consistency-checks-more' into seen
+  remotes/origin/todo   15c6383f80 What's cooking (2025/02 #03)
+
+The SEASnet repository in ~eggert/src/github/git is a clone of public repo that Prof. Eggert fetched. It tracks the usual remote origin and contains only the integration branches (master, maint, next, seen, todo, jch). A brand-new clone from GitHub contains exactly the same branches plus whatever newer commits have appeared since Eggert’s last fetch. Both repositories also have the dozens of short-lived topic branches.
