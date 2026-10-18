@@ -44,7 +44,11 @@ int output_bytes(const opts_t *o, rng64_t next64)
                 return 1;
             }
         } else {
-            fwrite(buf, 1, n, outfile);
+            if (fwrite(buf, 1, n, outfile) != n) {
+                free(buf);
+                if (outfile != stdout) fclose(outfile);
+                return 1;
+            }
         }
         
         left -= n;
@@ -52,8 +56,8 @@ int output_bytes(const opts_t *o, rng64_t next64)
     
     free(buf);
     if (outfile != stdout) {
-        fclose(outfile);
+        return fclose(outfile) == 0 ? 0 : 1;
     }
     
-    return 0;
+    return fflush(outfile) == 0 ? 0 : 1;
 }
